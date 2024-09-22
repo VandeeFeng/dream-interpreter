@@ -10,6 +10,7 @@ import { Home, Share2, Download } from 'lucide-react'
 import VanGoghClouds from './van-gogh-clouds'
 import { motion, AnimatePresence } from 'framer-motion'
 
+
 export default function DreamInterpreter() {
   const [step, setStep] = useState(1)
   const [dreamDescription, setDreamDescription] = useState('')

@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 
-export default function AIGenerate() {
-  const [prompt, setPrompt] = useState('');
+interface AIGenerateProps {
+  prompt: string;
+  onImageGenerated: (imageUrl: string) => void;
+}
+
+export default function AIGenerate({ prompt, onImageGenerated }: AIGenerateProps) {
   const [generatedImage, setGeneratedImage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,6 +30,7 @@ export default function AIGenerate() {
 
       const data = await response.json();
       setGeneratedImage(data.imageUrl);
+      onImageGenerated(data.imageUrl);
     } catch (error) {
       console.error('Error generating image:', error);
       // Handle error (e.g., show an error message to the user)
@@ -36,18 +40,14 @@ export default function AIGenerate() {
   };
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>AI Image Generator</CardTitle>
+        <CardTitle>AI 图像生成</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Input
-          placeholder="Enter your image description"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-        />
-        <Button onClick={handleGenerateImage} disabled={isLoading}>
-          {isLoading ? 'Generating...' : 'Generate Image'}
+        <p>基于您的梦境描述："{prompt}"</p>
+        <Button onClick={handleGenerateImage} disabled={isLoading} className="w-full bg-[#A2B5BB] hover:bg-[#8FA5AB] text-white">
+          {isLoading ? '生成中...' : '生成图像'}
         </Button>
         {generatedImage && (
           <div className="mt-4">
