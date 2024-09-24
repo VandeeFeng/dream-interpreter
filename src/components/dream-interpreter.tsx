@@ -145,7 +145,7 @@ export default function DreamInterpreter() {
                     required
                     className="bg-[#E8E1D9] border-[#B0A8A2] text-[#5C5C5C] placeholder-[#B0A8A2]"
                   />
-                  <Button type="submit" className="w-full bg-[#A2B5BB] hover:bg-[#8FA5AB] text-white">重新生成图片</Button>
+                  <Button type="submit" className="w-full bg-[#A2B5BB] hover:bg-[#8FA5AB] text-white">生成图片</Button>
                 </form>
               </motion.div>
             )}
@@ -153,7 +153,7 @@ export default function DreamInterpreter() {
             {step === 4 && (
               <motion.div key="step4" {...fadeInOut}>
                 <div className="space-y-4">
-                  <h2 className="text-xl font-semibold text-[#6E7F80] text-center">请选择最终的图片：</h2>
+                  <h2 className="text-xl font-semibold text-[#6E7F80] text-center">请选择更接近梦境印象的图片：</h2>
                   <div className="grid grid-cols-2 gap-4">
                     {selectedImage.map((image, i) => (
                       <motion.button
