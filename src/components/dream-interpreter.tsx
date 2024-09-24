@@ -77,14 +77,14 @@ export default function DreamInterpreter() {
     animate: { opacity: 1 },
     exit: { opacity: 0 },
     transition: { duration: 0.5, ease: "easeInOut" }
-  }
+  }：
 
   return (
     <div className="min-h-screen bg-[#F0EAE2] flex items-center justify-center p-4 relative overflow-hidden">
       <VanGoghClouds />
       <Card className="w-full max-w-2xl bg-[#F7F3F0] shadow-lg relative z-10">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-semibold text-[#6E7F80]">梦境解析</CardTitle>
+          <CardTitle className="text-3xl font-semibold text-[#6E7F80]">Morpheus - 梦境解析 V1.0</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <AnimatePresence mode="wait">
