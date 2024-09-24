@@ -1,9 +1,10 @@
+.code-workspace
 # custom
 bin
 blog/
 deno.lock
 dist/
-public
+
 prod-db.zip
 .obsidian
 .env

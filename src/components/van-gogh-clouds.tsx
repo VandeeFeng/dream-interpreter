@@ -16,7 +16,7 @@ export default function VanGoghClouds() {
   const [clouds, setClouds] = useState<Cloud[]>([])
 
   useEffect(() => {
-    const newClouds: Cloud[] = Array.from({ length: 15 }, (_, i) => ({
+    const newClouds: Cloud[] = Array.from({ length: 30 }, (_, i) => ({ // Increased number of clouds
       id: i,
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
@@ -49,7 +49,7 @@ export default function VanGoghClouds() {
           transition={{
             repeat: Infinity,
             repeatType: "reverse",
-            duration: Math.random() * 20 + 10,
+            duration: Math.random() * 10 + 5, // Reduced duration to make clouds move faster
             ease: "easeInOut",
           }}
         />

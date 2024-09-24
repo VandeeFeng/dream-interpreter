@@ -15,26 +15,68 @@ export default function DreamInterpreter() {
   const [step, setStep] = useState(1)
   const [dreamDescription, setDreamDescription] = useState('')
   const [additionalDetails, setAdditionalDetails] = useState('')
-  const [selectedImage, setSelectedImage] = useState('')
+  const [selectedImage, setSelectedImage] = useState([''])
   const [finalImage, setFinalImage] = useState('')
   const [dreamInterpretation, setDreamInterpretation] = useState('')
   const [aiPrompt, setAiPrompt] = useState('')
 
-  const handleSubmitDescription = (e: React.FormEvent) => {
-    e.preventDefault()
-    setAiPrompt(dreamDescription)
-    setStep(2)
+  const handleSubmitDescription = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAiPrompt(dreamDescription);
+
+    try {
+      // Send the input to the LLM and get the generated image URLs
+      const response = await fetch('/api/generate-images', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: dreamDescription, count: 3 }), // Request 3 images
+      });
+
+      const data = await response.json();
+      setSelectedImage(data.imageUrls); // Assuming the API returns an array of image URLs
+    } catch (error) {
+      console.error('Error generating images:', error);
+      // Set placeholder images if the image generation fails
+      setSelectedImage([
+        '/error-placeholder.png',
+        '/error-placeholder.png',
+        '/error-placeholder.png',
+      ]);
+    } finally {
+      setStep(2);
+    }
   }
 
   const handleImageSelection = (image: string) => {
-    setSelectedImage(image)
+    setSelectedImage([image])
     setStep(3)
   }
 
-  const handleSubmitDetails = (e: React.FormEvent) => {
-    e.preventDefault()
-    setAiPrompt(prevPrompt => `${prevPrompt}\n额外细节: ${additionalDetails}`)
-    setStep(4)
+  const handleSubmitDetails = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAiPrompt(prevPrompt => `${prevPrompt}\n额外细节: ${additionalDetails}`);
+
+    try {
+      // Optionally, send additional details to the LLM and get a new image URL
+      const response = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: `${aiPrompt}\n额外细节: ${additionalDetails}` }),
+      });
+
+      const data = await response.json();
+      setSelectedImage([data.imageUrl]); // Assuming the API returns the image URL
+    } catch (error) {
+      console.error('Error generating image:', error);
+      // Set a placeholder image if the image generation fails
+      setSelectedImage(['/error-placeholder.png']);
+    } finally {
+      setStep(4);
+    }
   }
 
   const handleFinalImageSelection = (image: string) => {
@@ -49,7 +91,7 @@ export default function DreamInterpreter() {
     setStep(1)
     setDreamDescription('')
     setAdditionalDetails('')
-    setSelectedImage('')
+    setSelectedImage([''])
     setFinalImage('')
     setDreamInterpretation('')
     setAiPrompt('')
@@ -101,16 +143,16 @@ export default function DreamInterpreter() {
                 <div className="space-y-4">
                   <h2 className="text-xl font-semibold text-[#6E7F80] text-center">请选择最接近你梦境的图片：</h2>
                   <div className="grid grid-cols-3 gap-4">
-                    {[1, 2, 3].map((i) => (
+                    {selectedImage.map((image, i) => (
                       <motion.button
                         key={i}
                         className="relative group focus:outline-none"
-                        onClick={() => handleImageSelection(`image${i}`)}
+                        onClick={() => handleImageSelection(image)}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         <Image
-                          src={generateImageUrl(i)}
+                          src={image}
                           alt={`Dream image ${i}`}
                           width={200}
                           height={200}
