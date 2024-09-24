@@ -9,7 +9,7 @@ import Image from "next/image"
 import { Home, Share2, Download } from 'lucide-react'
 import VanGoghClouds from './van-gogh-clouds'
 import { motion, AnimatePresence } from 'framer-motion'
-
+import { generateImages } from '@/utils/imageGenerator';
 
 export default function DreamInterpreter() {
   const [step, setStep] = useState(1)
@@ -24,29 +24,9 @@ export default function DreamInterpreter() {
     e.preventDefault();
     setAiPrompt(dreamDescription);
 
-    try {
-      // Send the input to the LLM and get the generated image URLs
-      const response = await fetch('/api/generate-images', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt: dreamDescription, count: 3 }), // Request 3 images
-      });
-
-      const data = await response.json();
-      setSelectedImage(data.imageUrls); // Assuming the API returns an array of image URLs
-    } catch (error) {
-      console.error('Error generating images:', error);
-      // Set placeholder images if the image generation fails
-      setSelectedImage([
-        '/error-placeholder.png',
-        '/error-placeholder.png',
-        '/error-placeholder.png',
-      ]);
-    } finally {
-      setStep(2);
-    }
+    const imageUrls = await generateImages(dreamDescription, 3);
+    setSelectedImage(imageUrls);
+    setStep(2);
   }
 
   const handleImageSelection = (image: string) => {
@@ -56,33 +36,18 @@ export default function DreamInterpreter() {
 
   const handleSubmitDetails = async (e: React.FormEvent) => {
     e.preventDefault();
-    setAiPrompt(prevPrompt => `${prevPrompt}\n额外细节: ${additionalDetails}`);
+    const updatedPrompt = `${aiPrompt}\n额外细节: ${additionalDetails}`;
+    setAiPrompt(updatedPrompt);
 
-    try {
-      // Optionally, send additional details to the LLM and get a new image URL
-      const response = await fetch('/api/generate-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt: `${aiPrompt}\n额外细节: ${additionalDetails}` }),
-      });
-
-      const data = await response.json();
-      setSelectedImage([data.imageUrl]); // Assuming the API returns the image URL
-    } catch (error) {
-      console.error('Error generating image:', error);
-      // Set a placeholder image if the image generation fails
-      setSelectedImage(['/error-placeholder.png']);
-    } finally {
-      setStep(4);
-    }
+    const imageUrls = await generateImages(updatedPrompt, 2);
+    setSelectedImage(imageUrls);
+    setStep(4);
   }
 
   const handleFinalImageSelection = (image: string) => {
-    setFinalImage(image)
-    setDreamInterpretation(`基于您的描述"${dreamDescription}"和额外细节"${additionalDetails}"，这个梦可能象征着个人成长和变革。梦中的场景暗示您可能正在经历一个转变期，面对新的挑战和机遇。这个梦鼓励您拥抱变化，相信自己有能力应对新的情况。`)
-    setStep(5)
+    setFinalImage(image);
+    setDreamInterpretation(`基于您的描述"${dreamDescription}"和额外细节"${additionalDetails}"，这个梦可能象征着个人成长和变革。梦中的场景暗示您可能正在经历一个转变期，面对新的挑战和机遇。这个梦鼓励您拥抱变化，相信自己有能力应对新的情况。`);
+    setStep(5);
   }
 
   const generateImageUrl = (index: number) => `/placeholder.svg?height=300&width=300&text=AI Generated Image ${index}`
@@ -188,16 +153,16 @@ export default function DreamInterpreter() {
                 <div className="space-y-4">
                   <h2 className="text-xl font-semibold text-[#6E7F80] text-center">请选择最终的图片：</h2>
                   <div className="grid grid-cols-2 gap-4">
-                    {[1, 2].map((i) => (
+                    {selectedImage.map((image, i) => (
                       <motion.button
                         key={i}
                         className="relative group focus:outline-none"
-                        onClick={() => handleFinalImageSelection(`finalImage${i}`)}
+                        onClick={() => handleFinalImageSelection(image)}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         <Image
-                          src={generateImageUrl(i + 3)}
+                          src={image}
                           alt={`Final dream image ${i}`}
                           width={300}
                           height={300}
@@ -216,7 +181,7 @@ export default function DreamInterpreter() {
                 <div className="space-y-6">
                   <h2 className="text-2xl font-semibold text-[#6E7F80] text-center">梦境解析</h2>
                   <Image
-                    src={generateImageUrl(6)}
+                    src={finalImage}
                     alt="Selected dream image"
                     width={600}
                     height={400}
