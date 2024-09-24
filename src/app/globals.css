@@ -73,4 +73,10 @@
   body {
     @apply bg-background text-foreground;
   }
+  img {
+    max-width: 100%; /* 确保图片不会超出容器 */
+    height: auto;  
+    display: block; 
+    margin: 0 auto;  
+  }
 }
