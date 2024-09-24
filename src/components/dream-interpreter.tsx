@@ -50,8 +50,6 @@ export default function DreamInterpreter() {
     setStep(5);
   }
 
-  const generateImageUrl = (index: number) => `/placeholder.svg?height=300&width=300&text=AI Generated Image ${index}`
-
   const handleReset = () => {
     setStep(1)
     setDreamDescription('')
