@@ -10,6 +10,7 @@ import { Home, Share2, Download } from 'lucide-react'
 import VanGoghClouds from './van-gogh-clouds'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateImages } from '@/utils/imageGenerator';
+import ImageDownloadModal from './ImageDownloadModal';
 
 export default function DreamInterpreter() {
   const [step, setStep] = useState(1)
@@ -19,6 +20,8 @@ export default function DreamInterpreter() {
   const [finalImage, setFinalImage] = useState('')
   const [dreamInterpretation, setDreamInterpretation] = useState('')
   const [aiPrompt, setAiPrompt] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imageUrlToDownload, setImageUrlToDownload] = useState('');
 
   const handleSubmitDescription = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +68,8 @@ export default function DreamInterpreter() {
   }
 
   const handleDownload = () => {
-    alert('下载功能待实现')
+    setImageUrlToDownload(finalImage);
+    setIsModalOpen(true);
   }
 
   const fadeInOut = {
@@ -80,7 +84,7 @@ export default function DreamInterpreter() {
       <VanGoghClouds />
       <Card className="w-full max-w-2xl bg-[#F7F3F0] shadow-lg relative z-10">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-semibold text-[#6E7F80]">Morpheus - 周公解梦 V1.0</CardTitle>
+          <CardTitle className="text-3xl font-semibold text-[#6E7F80]">梦境解析</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <AnimatePresence mode="wait">
@@ -141,7 +145,7 @@ export default function DreamInterpreter() {
                     required
                     className="bg-[#E8E1D9] border-[#B0A8A2] text-[#5C5C5C] placeholder-[#B0A8A2]"
                   />
-                  <Button type="submit" className="w-full bg-[#A2B5BB] hover:bg-[#8FA5AB] text-white">生成图片</Button>
+                  <Button type="submit" className="w-full bg-[#A2B5BB] hover:bg-[#8FA5AB] text-white">重新生成图片</Button>
                 </form>
               </motion.div>
             )}
@@ -149,7 +153,7 @@ export default function DreamInterpreter() {
             {step === 4 && (
               <motion.div key="step4" {...fadeInOut}>
                 <div className="space-y-4">
-                  <h2 className="text-xl font-semibold text-[#6E7F80] text-center">请再次选择与你感觉更接近的图片：</h2>
+                  <h2 className="text-xl font-semibold text-[#6E7F80] text-center">请选择最终的图片：</h2>
                   <div className="grid grid-cols-2 gap-4">
                     {selectedImage.map((image, i) => (
                       <motion.button
@@ -208,6 +212,12 @@ export default function DreamInterpreter() {
           </CardFooter>
         )}
       </Card>
+      {isModalOpen && (
+        <ImageDownloadModal
+          imageUrl={imageUrlToDownload}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   )
 }
