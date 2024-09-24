@@ -77,7 +77,7 @@ export default function DreamInterpreter() {
     animate: { opacity: 1 },
     exit: { opacity: 0 },
     transition: { duration: 0.5, ease: "easeInOut" }
-  }：
+  }
 
   return (
     <div className="min-h-screen bg-[#F0EAE2] flex items-center justify-center p-4 relative overflow-hidden">
